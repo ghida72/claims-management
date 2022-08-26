@@ -1,0 +1,106 @@
+.item-details {
+  display: flex;
+  flex-direction: column;
+  gap: 6.4rem;
+}
+
+.label {
+  margin-bottom: 1.2rem;
+  font-weight: 500;
+}
+
+.item-details span {
+  display: block;
+}
+
+.CPTGeneral {
+  display: flex;
+  gap: 4.8rem;
+}
+
+.CPTDetails {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  row-gap: 1.2rem;
+}
+
+.CPTDetails .start {
+  grid-column-start: 2;
+}
+
+.CPTDetails .heading {
+  font-weight: 500;
+}
+.CPTDetails span {
+  display: inline-block;
+}
+
+.navigate-buttons {
+  display: flex;
+  gap: 0.4rem;
+  font-size: 1.6rem;
+}
+
+/* .navigate-buttons a:link,
+.navigate-buttons a:visited {
+  color: #01121b;
+}
+
+.navigate-buttons a:hover,
+.navigate-buttons a:active,
+.navigate-buttons a:focus {
+  font-size: 1.6rem;
+} */
+
+.navigate-buttons button,
+.navigate-buttons button:visited,
+.navigate-buttons button:active,
+.navigate-buttons button:focus,
+.navigate-buttons button:hover {
+  background-color: #fff;
+  border: none;
+  cursor: pointer;
+  color: #01121b;
+  font-size: 1.6rem;
+}
+
+.navigate-buttons button:disabled {
+  color: #677176;
+  cursor: default;
+}
+/* .navigate-buttons .icon {
+  color: #677176;
+} */
+
+.action-buttons {
+  margin-top: 3.2rem;
+  display: flex;
+  gap: 1.2rem;
+  justify-content: flex-end;
+}
+
+.action-buttons button {
+  padding: 0.8rem 2.4rem;
+}
+
+/*in order to visually hide the labels of the inputs as they are not requested by design and not hide them from screenreaders for accessibility purpose
+https://css-tricks.com/html-inputs-and-labels-a-love-story/ 
+but perhaps i can use display none or visibility hidden in my case as there are labels on UI in all cases*/
+/* .visually-hidden {
+  border-width: 0 !important;
+  clip: rect(1px, 1px, 1px, 1px) !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  position: absolute !important;
+  white-space: nowrap !important;
+  width: 1px !important;
+} */
+
+/* .visually-hidden {
+  display: none;
+} */
+
+.CPTDetails label {
+  display: none;
+}

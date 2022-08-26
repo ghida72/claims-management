@@ -1,0 +1,34 @@
+.filterForm {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  font-size: 1.6rem;
+}
+
+.filterForm label {
+  display: block;
+  font-size: 1.6rem;
+}
+
+.filterForm input,
+.filterForm select {
+  box-sizing: content-box;
+  width: 12rem;
+  height: 1.6rem;
+  font-size: 1.4rem;
+  padding: 0.4rem 0.8rem;
+  margin-top: 0.8rem;
+  border: 1px solid #01090d;
+}
+
+/*Hide arrows from the input claim number*/
+/* Chrome, Safari, Edge, Opera */
+.no-spinner input::-webkit-outer-spin-button,
+.no-spinner input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Firefox */
+.no-spinner input[type="number"] {
+  -moz-appearance: textfield;
+}
