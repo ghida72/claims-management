@@ -14,7 +14,6 @@ const ClaimDetailsContent = ({
   onReloadClaim,
   onToggle,
 }) => {
-  // console.log(claim);
   const dateSubmitted = stringifyDate(claim.dateSubmitted);
   const dateProcessed = claim.dateClosed
     ? stringifyDate(claim.dateClosed)
@@ -78,39 +77,39 @@ const ClaimDetailsContent = ({
 
   const putClaim = (updatedClaim) => {
     httpClient
-      .put(
-        `https://claims-management-39fdb-default-rtdb.europe-west1.firebasedatabase.app/newClaims/${claim.claimNumber}.json`,
-        updatedClaim
-      )
+      .put(`newClaims/${claim.claimNumber}.json`, updatedClaim)
       .then(() => {
         onReloadClaim();
       });
   };
   const saveClaimHandler = () => {
-    const updatedClaim = mapClaimToBackendModel();
-    putClaim(updatedClaim);
-    //onReloadClaim();
+    if (claim.status === "pending") {
+      const updatedClaim = mapClaimToBackendModel();
+      putClaim(updatedClaim);
+    }
   };
 
   const confirmClaimHandler = () => {
-    const isValid = claim.items.every((item) => item.approved);
-    if (isValid) {
-      const updatedClaim = mapClaimToBackendModel();
+    if (claim.status === "pending") {
+      const isValid = claim.items.every((item) => item.approved);
+      if (isValid) {
+        const updatedClaim = mapClaimToBackendModel();
 
-      const today = getToday();
+        const today = getToday();
 
-      const isApproved = claim.items.every(
-        (item) => item.requested.net === item.approved.net
-      );
-      const isRejected = claim.items.every((item) => item.approved.net === 0);
+        const isApproved = claim.items.every(
+          (item) => item.requested.net === item.approved.net
+        );
+        const isRejected = claim.items.every((item) => item.approved.net === 0);
 
-      updatedClaim.status = isApproved
-        ? "approved"
-        : isRejected
-        ? "rejected"
-        : "partially approved";
-      updatedClaim.dateClosed = today;
-      putClaim(updatedClaim);
+        updatedClaim.status = isApproved
+          ? "approved"
+          : isRejected
+          ? "rejected"
+          : "partially approved";
+        updatedClaim.dateClosed = today;
+        putClaim(updatedClaim);
+      }
     }
   };
 

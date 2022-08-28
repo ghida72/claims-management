@@ -14,9 +14,7 @@ const FilterableClaimsTable = () => {
 
   const buildPromise = useCallback(() => {
     return Promise.all([
-      httpClient.get(
-        `https://claims-management-adb8a-default-rtdb.europe-west1.firebasedatabase.app/newClaims.json`
-      ),
+      httpClient.get(`newClaims.json`),
       lookupStore.getCurrencies(),
     ]);
   }, []);

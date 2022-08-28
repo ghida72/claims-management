@@ -24,6 +24,7 @@ const Drawer = (props) => {
 
   const hideDrawerHandler = () => {
     setIsOpen(false);
+    setShowPrompt(false);
     if (props.postCloseHandler) {
       setTimeout(() => {
         props.postCloseHandler();

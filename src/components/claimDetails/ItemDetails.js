@@ -41,34 +41,38 @@ const ItemDetails = () => {
     setEnteredQuantity(newValue);
     setEnteredUnitPrice(item.requested.unitPrice);
     const formIsDirty =
-      newValue !== initialQuantity || enteredUnitPrice !== initialUnitPrice;
+      parseFloat(newValue) !== initialQuantity ||
+      unitPrice !== initialUnitPrice;
     setShowPrompt(formIsDirty);
   };
 
   const onEnteredUnitPriceChange = (newValue) => {
     setEnteredUnitPrice(newValue);
     const formIsDirty =
-      enteredQuantity !== initialQuantity || newValue !== initialUnitPrice;
+      quantity !== initialQuantity || parseFloat(newValue) !== initialUnitPrice;
     setShowPrompt(formIsDirty);
   };
 
   const saveItemHandler = (e) => {
     e.preventDefault();
-    formIsValid &&
-      setClaim({
-        ...claim,
-        items: claim.items.map((item) => {
-          const updatedItem = { ...item };
-          if (item.CPT === itemCPT) {
-            updatedItem.approved = {
-              quantity: quantity,
-              unitPrice: unitPrice,
-              net: calculateNet({ quantity, unitPrice }),
-            };
-          }
-          return updatedItem;
-        }),
-      });
+    if (claim.status === "pending") {
+      setShowPrompt(false);
+      formIsValid &&
+        setClaim({
+          ...claim,
+          items: claim.items.map((item) => {
+            const updatedItem = { ...item };
+            if (item.CPT === itemCPT) {
+              updatedItem.approved = {
+                quantity: quantity,
+                unitPrice: unitPrice,
+                net: calculateNet({ quantity, unitPrice }),
+              };
+            }
+            return updatedItem;
+          }),
+        });
+    }
   };
 
   const closeItemHandler = (e) => {

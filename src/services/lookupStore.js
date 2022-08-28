@@ -12,14 +12,11 @@ const lookupStore = {
   },
 };
 
-const BASE_URL =
-  "https://claims-management-adb8a-default-rtdb.europe-west1.firebasedatabase.app/";
-
 const cache = {};
 
-const get = async (key, url) => {
+const get = async (key, path) => {
   if (!cache[key]) {
-    cache[key] = await httpClient.get(`${BASE_URL}/${url}`);
+    cache[key] = await httpClient.get(path);
   }
   return cache[key];
 };

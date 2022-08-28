@@ -18,9 +18,7 @@ const ClaimDetails = () => {
   const { claimNb } = params;
 
   const buildGetClaimPromise = useCallback(() => {
-    return httpClient.get(
-      `https://claims-management-adb8a-default-rtdb.europe-west1.firebasedatabase.app/newClaims/${claimNb}.json`
-    );
+    return httpClient.get(`newClaims/${claimNb}.json`);
   }, [claimNb]);
 
   const buildPromise = useCallback(() => {
