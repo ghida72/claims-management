@@ -1,17 +1,19 @@
 import React, { useState, useContext } from "react";
 import { useOutletContext } from "react-router-dom";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import classes from "./ItemDetails.module.css";
-import { taxPercent } from "../../claims";
+import { TAX_PERCENT, CPT_PROMPT_MESSAGE } from "../../constants";
 import calculateNet from "../../helpers/calculateNet";
 import DrawerContext from "../../store/DrawerContext";
 import { IonIcon } from "@ionic/react";
 import { chevronBackOutline, chevronForwardOutline } from "ionicons/icons";
 import { useNavigate } from "react-router-dom";
+import prompt from "../../helpers/promptHelper";
 
 const ItemDetails = () => {
   const [claim, setClaim, CPTs] = useOutletContext();
-  const { hideDrawerHandler } = useContext(DrawerContext);
+  const { tryCloseDrawer, showPrompt, setShowPrompt } =
+    useContext(DrawerContext);
 
   const params = useParams();
 
@@ -35,6 +37,21 @@ const ItemDetails = () => {
     unitPrice && unitPrice > 0 && unitPrice <= item.requested.unitPrice;
   const formIsValid = quantityIsValid && unitPriceIsValid;
 
+  const onEnteredQtyChange = (newValue) => {
+    setEnteredQuantity(newValue);
+    setEnteredUnitPrice(item.requested.unitPrice);
+    const formIsDirty =
+      newValue !== initialQuantity || enteredUnitPrice !== initialUnitPrice;
+    setShowPrompt(formIsDirty);
+  };
+
+  const onEnteredUnitPriceChange = (newValue) => {
+    setEnteredUnitPrice(newValue);
+    const formIsDirty =
+      enteredQuantity !== initialQuantity || newValue !== initialUnitPrice;
+    setShowPrompt(formIsDirty);
+  };
+
   const saveItemHandler = (e) => {
     e.preventDefault();
     formIsValid &&
@@ -54,53 +71,30 @@ const ItemDetails = () => {
       });
   };
 
-  const formIsDirty =
-    enteredQuantity !== initialQuantity ||
-    enteredUnitPrice !== initialUnitPrice;
-
   const closeItemHandler = (e) => {
     e.preventDefault();
-    if (formIsDirty) {
-      if (
-        window.confirm(
-          "Are you sure you want to close without saving your changes?"
-        )
-      ) {
-        hideDrawerHandler();
-      }
+    tryCloseDrawer();
+  };
+
+  const navigateToCpt = (i, e) => {
+    e.preventDefault();
+    const _navigate = () => {
+      setShowPrompt(false);
+      navigate(`/claims/${claim.claimNumber}/${i.CPT}`);
+    };
+    if (showPrompt) {
+      prompt(CPT_PROMPT_MESSAGE, _navigate);
     } else {
-      hideDrawerHandler();
+      _navigate();
     }
   };
 
   const handlePrev = (e) => {
-    e.preventDefault();
-    if (formIsDirty) {
-      if (
-        window.confirm(
-          "Are you sure you want to navigate to another item without saving your changes?"
-        )
-      ) {
-        navigate(`/claims/${claim.claimNumber}/${prevItem.CPT}`);
-      }
-    } else {
-      navigate(`/claims/${claim.claimNumber}/${prevItem.CPT}`);
-    }
+    navigateToCpt(prevItem, e);
   };
 
   const handleNext = (e) => {
-    e.preventDefault();
-    if (formIsDirty) {
-      if (
-        window.confirm(
-          "Are you sure you want to navigate to another item without saving your changes?"
-        )
-      ) {
-        navigate(`/claims/${claim.claimNumber}/${nextItem.CPT}`);
-      }
-    } else {
-      navigate(`/claims/${claim.claimNumber}/${nextItem.CPT}`);
-    }
+    navigateToCpt(nextItem, e);
   };
 
   const currentItemIndex = claim.items.indexOf(item);
@@ -114,27 +108,12 @@ const ItemDetails = () => {
   return (
     <div className={classes["item-details"]}>
       <div className={classes["navigate-buttons"]}>
-        {/* {prevItem ? (
-          <button onClick={handlePrev}>
-            <IonIcon icon={chevronBackOutline} />
-          </button>
-        ) : (
-          <IonIcon className={classes.icon} icon={chevronBackOutline} />
-        )} */}
         <button disabled={!prevItem} onClick={handlePrev}>
           <IonIcon icon={chevronBackOutline} />
         </button>
         <button disabled={!nextItem} onClick={handleNext}>
           <IonIcon icon={chevronForwardOutline} />
         </button>
-
-        {/* {nextItem ? (
-          <a href="#" onClick={handleNext}>
-            <IonIcon icon={chevronForwardOutline} />
-          </a>
-        ) : (
-          <IonIcon className={classes.icon} icon={chevronForwardOutline} />
-        )} */}
       </div>
       <div className={classes.CPTGeneral}>
         <div>
@@ -165,10 +144,7 @@ const ItemDetails = () => {
             <label htmlFor="quantity">Quantity</label>
             <input
               disabled={claimNotPending}
-              onChange={(e) => {
-                setEnteredQuantity(e.target.value);
-                setEnteredUnitPrice(item.requested.unitPrice);
-              }}
+              onChange={(e) => onEnteredQtyChange(e.target.value)}
               type="number"
               id="quantity"
               name="quantity"
@@ -181,23 +157,23 @@ const ItemDetails = () => {
             <label htmlFor="unitPrice">Unit Price</label>
             <input
               disabled={claimNotPending}
-              onChange={(e) => setEnteredUnitPrice(e.target.value)}
+              onChange={(e) => onEnteredUnitPriceChange(e.target.value)}
               type="number"
               id="unitPrice"
               name="unitPrice"
               value={enteredUnitPrice}
             ></input>
           </div>
-          <span className={classes.heading}>Tax({taxPercent}%)</span>
+          <span className={classes.heading}>Tax({TAX_PERCENT}%)</span>
           <span>
             {(
-              (taxPercent / 100) *
+              (TAX_PERCENT / 100) *
               item.requested.quantity *
               item.requested.unitPrice
             ).toFixed(2)}
           </span>
           <div>
-            <label htmlFor="tax">Tax({taxPercent}%)</label>
+            <label htmlFor="tax">Tax({TAX_PERCENT}%)</label>
             <input
               disabled
               type="number"
@@ -207,7 +183,7 @@ const ItemDetails = () => {
                 enteredQuantity &&
                 enteredUnitPrice &&
                 (
-                  (taxPercent / 100) *
+                  (TAX_PERCENT / 100) *
                   parseFloat(enteredQuantity) *
                   parseFloat(enteredUnitPrice)
                 ).toFixed(2)

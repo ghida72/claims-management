@@ -1,15 +1,19 @@
-import { useParams } from "react-router-dom";
 import ItemDetails from "./ItemDetails";
 import Drawer from "../layout/Drawer";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, useNavigate, useParams } from "react-router-dom";
 
 const ItemDetailsWrapper = () => {
   const [claim] = useOutletContext();
   const params = useParams();
   const { itemCPT } = params;
+  const navigate = useNavigate();
+
+  const postCloseHandler = () => {
+    navigate(`/claims/${claim.claimNumber}`);
+  };
 
   return (
-    <Drawer pathname={`/claims/${claim.claimNumber}`}>
+    <Drawer postCloseHandler={postCloseHandler}>
       <ItemDetails key={itemCPT} />
     </Drawer>
   );

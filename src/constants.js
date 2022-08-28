@@ -1,4 +1,6 @@
-export const taxPercent = 5;
+export const TAX_PERCENT = 5;
+export const CPT_PROMPT_MESSAGE =
+  "Are you sure you want to leave without saving your changes?";
 
 const currency = [
   { code: "USD", symbol: "$" },

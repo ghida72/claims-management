@@ -1,8 +1,8 @@
-import { taxPercent } from "../claims";
+import { TAX_PERCENT } from "../constants";
 
 const calculateNet = (amounts) => {
   if (amounts) {
-    return amounts.quantity * amounts.unitPrice * (1 - taxPercent / 100);
+    return amounts.quantity * amounts.unitPrice * (1 - TAX_PERCENT / 100);
   } else {
     return null;
   }
