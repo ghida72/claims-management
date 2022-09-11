@@ -4,10 +4,18 @@ const useLoader = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const execute = useCallback(async (asyncOperation, onResolved) => {
+    if (
+      typeof asyncOperation !== "function" ||
+      typeof onResolved !== "function"
+    ) {
+      throw new Error(
+        "asyncFunction and onResolved should be of type: function"
+      );
+    }
     setIsLoading(true);
     setError(null);
+
     try {
-      //TODO: validate that asyncOperation is a function that returns a Promise
       const resolvedResult = await asyncOperation();
       onResolved(resolvedResult);
     } catch (error) {

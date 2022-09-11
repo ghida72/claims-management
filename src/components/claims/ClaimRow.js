@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import classes from "./ClaimRow.module.css";
-import stringifyDate from "../../helpers/stringifyDate";
+import formatDate from "../../helpers/formatDate";
 import { IonIcon } from "@ionic/react";
 import { linkOutline } from "ionicons/icons";
 
@@ -11,7 +11,7 @@ const ClaimRow = ({ claim }) => {
       ? "-"
       : `${claim.currency.symbol}${claim.approvedAmount.toFixed(2)}`;
 
-  const dateSubmitted = stringifyDate(claim.dateSubmitted);
+  const dateSubmitted = formatDate(claim.dateSubmitted);
 
   return (
     <tr className={"table " + classes["claim-row"]}>

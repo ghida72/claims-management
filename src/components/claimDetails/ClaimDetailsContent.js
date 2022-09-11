@@ -1,6 +1,6 @@
 import { Fragment, useState, useEffect } from "react";
 import classes from "./ClaimDetailsContent.module.css";
-import stringifyDate from "../../helpers/stringifyDate";
+import formatDate from "../../helpers/formatDate";
 import getToday from "../../helpers/getToday";
 import { Link } from "react-router-dom";
 import httpClient from "../../services/httpClient";
@@ -29,11 +29,9 @@ const ClaimDetailsContent = ({
     }
   }, []);
 
-  const dateSubmitted = stringifyDate(claim.dateSubmitted);
-  const dateProcessed = claim.dateClosed
-    ? stringifyDate(claim.dateClosed)
-    : "-";
-  const dateOfBirth = stringifyDate(claim.patient.dateOfBirth);
+  const dateSubmitted = formatDate(claim.dateSubmitted);
+  const dateProcessed = claim.dateClosed ? formatDate(claim.dateClosed) : "-";
+  const dateOfBirth = formatDate(claim.patient.dateOfBirth);
 
   const claimedTotal = claim.items
     .map((item) => item.requested.net)

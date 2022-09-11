@@ -20,6 +20,15 @@ const ClaimsTable = ({ filteredClaims }) => {
     return "asc";
   };
 
+  const headersMap = {
+    claimNumber: "Claim Number",
+    patientName: "Patient Name",
+    dateSubmitted: "Date Submitted",
+    claimedAmount: "Claimed Amount",
+    approvedAmount: "Approved Amount",
+    status: "Status",
+  };
+
   useEffect(() => {
     if (location.search) {
       requestSort(sortBy, sortDirection);
@@ -32,91 +41,30 @@ const ClaimsTable = ({ filteredClaims }) => {
     }
     return sortConfig.key === name ? sortConfig.direction : undefined;
   };
+
+  const getHeadersMapContent = (headersMap) => {
+    let content = [];
+    for (let key in headersMap) {
+      content.push(
+        <th>
+          <button
+            onClick={() =>
+              navigate(`/claims?sort=${key}&dir=${toggleSortDirection()}`)
+            }
+            className={"btn btn--small " + classes[getClassNameFor(key)]}
+          >
+            {headersMap[key]}
+          </button>
+        </th>
+      );
+    }
+    return content;
+  };
+
   return (
     <table className={"table " + classes["claims-table"]}>
       <thead>
-        <tr>
-          <th>
-            <button
-              onClick={() =>
-                navigate(
-                  `/claims?sort=claimNumber&dir=${toggleSortDirection()}`
-                )
-              }
-              className={
-                "btn btn--small " + classes[getClassNameFor("claimNumber")]
-              }
-            >
-              Claim Number
-            </button>
-          </th>
-          <th>
-            <button
-              onClick={() =>
-                navigate(
-                  `/claims?sort=patientName&dir=${toggleSortDirection()}`
-                )
-              }
-              className={
-                "btn btn--small " + classes[getClassNameFor("patientName")]
-              }
-            >
-              Patient Name
-            </button>
-          </th>
-          <th>
-            <button
-              onClick={() =>
-                navigate(
-                  `/claims?sort=dateSubmitted&dir=${toggleSortDirection()}`
-                )
-              }
-              className={
-                "btn btn--small " + classes[getClassNameFor("dateSubmitted")]
-              }
-            >
-              Date Submitted
-            </button>
-          </th>
-          <th>
-            <button
-              onClick={() => {
-                navigate(
-                  `/claims?sort=claimedAmount&dir=${toggleSortDirection()}`
-                );
-              }}
-              className={
-                "btn btn--small " + classes[getClassNameFor("claimedAmount")]
-              }
-            >
-              Claimed Amount
-            </button>
-          </th>
-          <th>
-            <button
-              onClick={() => {
-                navigate(
-                  `/claims?sort=approvedAmount&dir=${toggleSortDirection()}`
-                );
-              }}
-              className={
-                "btn btn--small " + classes[getClassNameFor("approvedAmount")]
-              }
-            >
-              Approved Amount
-            </button>
-          </th>
-          <th>
-            <button
-              onClick={() => {
-                navigate(`/claims?sort=status&dir=${toggleSortDirection()}`);
-              }}
-              className={"btn btn--small " + classes[getClassNameFor("status")]}
-            >
-              Status
-            </button>
-          </th>
-        </tr>
+        <tr>{getHeadersMapContent(headersMap)}</tr>
       </thead>
       <tbody>
         {sortedItems.map((claim) => (
