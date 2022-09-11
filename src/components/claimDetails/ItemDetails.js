@@ -2,15 +2,17 @@ import React, { useState, useContext } from "react";
 import { useOutletContext } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import classes from "./ItemDetails.module.css";
-import { TAX_PERCENT, CPT_PROMPT_MESSAGE } from "../../constants";
+import { TAX_PERCENT, CPT_PROMPT_MESSAGE, ALERT_TYPES } from "../../constants";
 import calculateNet from "../../helpers/calculateNet";
 import DrawerContext from "../../store/DrawerContext";
 import { IonIcon } from "@ionic/react";
 import { chevronBackOutline, chevronForwardOutline } from "ionicons/icons";
 import { useNavigate } from "react-router-dom";
 import prompt from "../../helpers/promptHelper";
+import AlertMessage from "../UI/AlertMessage";
 
 const ItemDetails = () => {
+  const [alert, setAlert] = useState(null);
   const [claim, setClaim, CPTs] = useOutletContext();
   const { tryCloseDrawer, showPrompt, setShowPrompt } =
     useContext(DrawerContext);
@@ -32,12 +34,13 @@ const ItemDetails = () => {
   const unitPrice = parseFloat(enteredUnitPrice);
 
   const quantityIsValid =
-    quantity && quantity > 0 && quantity <= item.requested.quantity;
+    enteredQuantity && quantity >= 0 && quantity <= item.requested.quantity;
   const unitPriceIsValid =
-    unitPrice && unitPrice > 0 && unitPrice <= item.requested.unitPrice;
+    enteredUnitPrice && unitPrice >= 0 && unitPrice <= item.requested.unitPrice;
   const formIsValid = quantityIsValid && unitPriceIsValid;
 
   const onEnteredQtyChange = (newValue) => {
+    setAlert(null);
     setEnteredQuantity(newValue);
     setEnteredUnitPrice(item.requested.unitPrice);
     const formIsDirty =
@@ -47,6 +50,7 @@ const ItemDetails = () => {
   };
 
   const onEnteredUnitPriceChange = (newValue) => {
+    setAlert(null);
     setEnteredUnitPrice(newValue);
     const formIsDirty =
       quantity !== initialQuantity || parseFloat(newValue) !== initialUnitPrice;
@@ -57,7 +61,7 @@ const ItemDetails = () => {
     e.preventDefault();
     if (claim.status === "pending") {
       setShowPrompt(false);
-      formIsValid &&
+      if (formIsValid) {
         setClaim({
           ...claim,
           items: claim.items.map((item) => {
@@ -72,6 +76,10 @@ const ItemDetails = () => {
             return updatedItem;
           }),
         });
+        setAlert({ type: ALERT_TYPES.success, msg: "Item saved successfully" });
+      } else {
+        setAlert({ type: ALERT_TYPES.error, msg: "Please enter valid values" });
+      }
     }
   };
 
@@ -136,7 +144,7 @@ const ItemDetails = () => {
           </span>
         </div>
       </div>
-      <form>
+      <form className={classes["lineItemForm"]}>
         <div className={classes.CPTDetails}>
           <span className={classes.start + " " + classes.heading}>
             Requested
@@ -214,10 +222,26 @@ const ItemDetails = () => {
             ></input>
           </div>
         </div>
-
+        {alert && (
+          <AlertMessage
+            type={alert.type}
+            message={alert.msg}
+            onCloseAlert={() => {
+              // console.log(e);
+              // debugger;
+              // e.preventDefault();
+              setAlert(null);
+            }}
+          />
+        )}
+        {/* <AlertMessage type={alert.type} message={alert.msg} /> */}
         <div className={classes["action-buttons"]}>
           {claim.status === "pending" && (
-            <button className="btn btn--large" onClick={saveItemHandler}>
+            <button
+              disabled={!showPrompt || !enteredQuantity || !enteredUnitPrice}
+              className="btn btn--large"
+              onClick={saveItemHandler}
+            >
               Save
             </button>
           )}

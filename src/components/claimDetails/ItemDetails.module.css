@@ -41,17 +41,6 @@
   font-size: 1.6rem;
 }
 
-/* .navigate-buttons a:link,
-.navigate-buttons a:visited {
-  color: #01121b;
-}
-
-.navigate-buttons a:hover,
-.navigate-buttons a:active,
-.navigate-buttons a:focus {
-  font-size: 1.6rem;
-} */
-
 .navigate-buttons button,
 .navigate-buttons button:visited,
 .navigate-buttons button:active,
@@ -68,12 +57,14 @@
   color: #677176;
   cursor: default;
 }
-/* .navigate-buttons .icon {
-  color: #677176;
-} */
+
+.lineItemForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
 
 .action-buttons {
-  margin-top: 3.2rem;
   display: flex;
   gap: 1.2rem;
   justify-content: flex-end;
@@ -81,6 +72,12 @@
 
 .action-buttons button {
   padding: 0.8rem 2.4rem;
+}
+
+.action-buttons button:disabled {
+  cursor: default;
+  background-color: #677176;
+  transform: none;
 }
 
 /*in order to visually hide the labels of the inputs as they are not requested by design and not hide them from screenreaders for accessibility purpose

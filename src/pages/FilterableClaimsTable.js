@@ -105,11 +105,7 @@ const FilterableClaimsTable = () => {
     claimsTableContent = <p>{error}</p>;
   }
   if (isLoading) {
-    claimsTableContent = (
-      <div>
-        <LoadingSpinner />
-      </div>
-    );
+    claimsTableContent = <LoadingSpinner />;
   }
   return (
     <main className="flex-layout">

@@ -9,7 +9,7 @@ import LoadingSpinner from "../components/layout/LoadingSpinner";
 
 const ClaimDetails = () => {
   const [claim, setClaim] = useState(null);
-  const [value, setValue] = useState(false);
+  const [reloadValue, setReloadValue] = useState(false);
   const [ICDs, setICDs] = useState(null);
   const [CPTs, setCPTs] = useState(null);
   const { isLoading, error, execute: getSingleClaim } = useLoader();
@@ -70,23 +70,19 @@ const ClaimDetails = () => {
   );
 
   const reloadClaim = () => {
-    setValue(!value);
+    setReloadValue(!reloadValue);
   };
 
   useEffect(() => {
     getSingleClaim(buildPromise, onResolved);
-  }, [getSingleClaim, buildPromise, onResolved, value]);
+  }, [getSingleClaim, buildPromise, onResolved, reloadValue]);
 
   if (error) {
     return <p>{error}</p>;
   }
 
   if (isLoading) {
-    return (
-      <div>
-        <LoadingSpinner />
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   if (!isLoading && !claim) {

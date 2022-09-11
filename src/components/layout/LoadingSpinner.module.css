@@ -1,14 +1,15 @@
 .spinner {
-  display: inline-block;
-  width: 80px;
-  height: 80px;
+  /* display: block; */
+  margin: 3.2rem auto;
+  /* width: 8 rem;
+  height: 8 rem; */
 }
 .spinner:after {
   content: " ";
   display: block;
-  width: 64px;
-  height: 64px;
-  margin: 8px;
+  width: 6.4rem;
+  height: 6.4rem;
+  margin: 0.8rem;
   border-radius: 50%;
   border: 6px solid #075985;
   border-color: #075985 transparent #075985 transparent;

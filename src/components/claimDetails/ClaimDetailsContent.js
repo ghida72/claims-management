@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useState, useEffect } from "react";
 import classes from "./ClaimDetailsContent.module.css";
 import stringifyDate from "../../helpers/stringifyDate";
 import getToday from "../../helpers/getToday";
@@ -6,6 +6,9 @@ import { Link } from "react-router-dom";
 import httpClient from "../../services/httpClient";
 import { IonIcon } from "@ionic/react";
 import { linkOutline } from "ionicons/icons";
+import AlertMessage from "../UI/AlertMessage";
+import prompt from "../../helpers/promptHelper";
+import { CLAIM_PROMPT_MESSAGE, ALERT_TYPES } from "../../constants";
 
 const ClaimDetailsContent = ({
   claim,
@@ -14,6 +17,18 @@ const ClaimDetailsContent = ({
   onReloadClaim,
   onToggle,
 }) => {
+  const [alert, setAlert] = useState(null);
+  const ALERT_KEY = "alert";
+
+  useEffect(() => {
+    const stringAlert = window.sessionStorage.getItem(ALERT_KEY);
+    if (stringAlert) {
+      const alertValue = JSON.parse(stringAlert);
+      setAlert(alertValue);
+      window.sessionStorage.removeItem(ALERT_KEY);
+    }
+  }, []);
+
   const dateSubmitted = stringifyDate(claim.dateSubmitted);
   const dateProcessed = claim.dateClosed
     ? stringifyDate(claim.dateClosed)
@@ -75,17 +90,30 @@ const ClaimDetailsContent = ({
     return updatedClaim;
   };
 
-  const putClaim = (updatedClaim) => {
+  const putClaim = (updatedClaim, callback) => {
     httpClient
       .put(`newClaims/${claim.claimNumber}.json`, updatedClaim)
       .then(() => {
-        onReloadClaim();
+        callback();
       });
+  };
+
+  const storeAlert = (type, msg) => {
+    //Set a session variable that will be read upon reloading the content of the page
+    //the reason we need to do this is because the reload calls a method on the parent
+    //which sets a state variable and reloads the parent. This causes this component to be removed
+    //from the DOM and re-rendered. The session value will then be read in the useEffect() hook to
+    //display the alert accordingly.
+    const alertString = JSON.stringify({ type, msg });
+    window.sessionStorage.setItem(ALERT_KEY, alertString);
+    onReloadClaim();
   };
   const saveClaimHandler = () => {
     if (claim.status === "pending") {
       const updatedClaim = mapClaimToBackendModel();
-      putClaim(updatedClaim);
+      putClaim(updatedClaim, () => {
+        storeAlert(ALERT_TYPES.success, "Claim saved successfully");
+      });
     }
   };
 
@@ -108,7 +136,16 @@ const ClaimDetailsContent = ({
           ? "rejected"
           : "partially approved";
         updatedClaim.dateClosed = today;
-        putClaim(updatedClaim);
+        prompt(CLAIM_PROMPT_MESSAGE, () => {
+          putClaim(updatedClaim, () => {
+            storeAlert(ALERT_TYPES.success, "Claim processed successfully");
+          });
+        });
+      } else {
+        storeAlert(
+          ALERT_TYPES.error,
+          "Please process all line items before submitting"
+        );
       }
     }
   };
@@ -144,20 +181,21 @@ const ClaimDetailsContent = ({
           <span className={classes.label}>Status </span>
           <span>{claim.status}</span>
         </div>
-
-        <div
-          className={
-            claim.status === "pending"
-              ? classes["action-buttons"]
-              : classes["action-buttons"] + " " + classes.hidden
-          }
-        >
-          <button className="btn btn--large" onClick={saveClaimHandler}>
-            Save
-          </button>
-          <button className="btn btn--large" onClick={confirmClaimHandler}>
-            Submit
-          </button>
+        <div>
+          <div
+            className={
+              claim.status === "pending"
+                ? classes["action-buttons"]
+                : classes["action-buttons"] + " " + classes.hidden
+            }
+          >
+            <button className="btn btn--large" onClick={saveClaimHandler}>
+              Save
+            </button>
+            <button className="btn btn--large" onClick={confirmClaimHandler}>
+              Submit
+            </button>
+          </div>
         </div>
       </div>
 
@@ -228,6 +266,15 @@ const ClaimDetailsContent = ({
           ))}
         </tbody>
       </table>
+      {alert && (
+        <div className={classes.alert}>
+          <AlertMessage
+            type={alert.type}
+            message={alert.msg}
+            onCloseAlert={() => setAlert(null)}
+          />
+        </div>
+      )}
     </Fragment>
   );
 };
