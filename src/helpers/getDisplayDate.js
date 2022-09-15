@@ -1,4 +1,4 @@
-const formatDate = (date) => {
+const getDisplayDate = (date) => {
   const formattedDate = date.toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",
@@ -7,4 +7,4 @@ const formatDate = (date) => {
   return formattedDate;
 };
 
-export default formatDate;
+export default getDisplayDate;

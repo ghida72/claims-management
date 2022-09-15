@@ -1,5 +1,10 @@
 import { useState, useCallback } from "react";
-
+/*
+This hook manages the execution of an asynchronous operation (i.e. API call). It returns
+to the calling component the two state variables (isLoading and error) as well as an execute function which 
+takes an asyncOperation function and an onResolved function that is invoked once the
+promise returned from asyncOperation completes.
+*/
 const useLoader = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);

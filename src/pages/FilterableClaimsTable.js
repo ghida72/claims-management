@@ -12,18 +12,21 @@ const FilterableClaimsTable = () => {
   const [submittedCriteria, setSubmittedCriteria] = useState({});
   const [claims, setClaims] = useState([]);
 
-  const buildPromise = useCallback(() => {
+  const buildAggregatePromise = useCallback(() => {
+    /*The execute method of the useLoader hook expects a single promise, but we need to fetch 
+    data from two APIs.*/
     return Promise.all([
-      httpClient.get(`newClaims.json`),
+      httpClient.get(`claims.json`),
       lookupStore.getCurrencies(),
     ]);
   }, []);
 
-  const onResolved = useCallback((data) => {
+  const onPromisesResolved = useCallback((data) => {
     const [claims, currencies] = data;
     const loadedClaims = [];
 
     for (const key in claims) {
+      //Map from claim backend model to view model
       const currentClaim = claims[key];
       const clm = {
         claimNumber: currentClaim.claimNumber,
@@ -54,13 +57,17 @@ const FilterableClaimsTable = () => {
   }, []);
 
   useEffect(() => {
-    getAllClaims(buildPromise, onResolved);
-  }, [getAllClaims, buildPromise, onResolved]);
+    getAllClaims(buildAggregatePromise, onPromisesResolved);
+  }, [getAllClaims, buildAggregatePromise, onPromisesResolved]);
 
   const filteredClaims = claims.filter((claim) => {
+    /*
+    The filter criteria entered by the user will be stored as key value pairs in the submittedCriteria state
+    variable. Accordingly, we are checking that the value of each one of the keys matches the value 
+    of its corresponding property of the claim.
+    */
     return Object.keys(submittedCriteria).every((key) => {
       let result = false;
-      const dateSubmitted = claim.dateSubmitted;
       switch (key) {
         case "claimNumber":
           result = claim[key] === Number(submittedCriteria[key]);
@@ -73,14 +80,13 @@ const FilterableClaimsTable = () => {
             .toLowerCase();
           result = transformedfullName.includes(transformedSubmittedPatient);
           break;
-
         case "startDate":
           const startDate = new Date(submittedCriteria[key]);
-          result = dateSubmitted >= startDate;
+          result = claim.dateSubmitted >= startDate;
           break;
         case "endDate":
           const endDate = new Date(submittedCriteria[key]);
-          result = dateSubmitted <= endDate;
+          result = claim.dateSubmitted <= endDate;
           break;
         case "status":
           result = claim[key] === submittedCriteria[key];
@@ -97,7 +103,7 @@ const FilterableClaimsTable = () => {
     setSubmittedCriteria(criteria);
   };
 
-  let claimsTableContent = <p>No claims found matching these criteria</p>;
+  let claimsTableContent = <p>No claims found. </p>;
   if (filteredClaims.length > 0) {
     claimsTableContent = <ClaimsTable filteredClaims={filteredClaims} />;
   }

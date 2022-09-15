@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, Fragment } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Outlet, useParams } from "react-router-dom";
 import calculateNet from "../helpers/calculateNet";
 import ClaimDetailsContent from "../components/claimDetails/ClaimDetailsContent";
@@ -17,18 +17,14 @@ const ClaimDetails = () => {
   const params = useParams();
   const { claimNb } = params;
 
-  const buildGetClaimPromise = useCallback(() => {
-    return httpClient.get(`newClaims/${claimNb}.json`);
-  }, [claimNb]);
-
-  const buildPromise = useCallback(() => {
+  const buildAggregatePromise = useCallback(() => {
     return Promise.all([
       lookupStore.getCurrencies(),
       lookupStore.getICDs(),
       lookupStore.getCPTs(),
-      buildGetClaimPromise(),
+      httpClient.get(`claims/${claimNb}.json`),
     ]);
-  }, [buildGetClaimPromise]);
+  }, [claimNb]);
 
   const mapClaimFromBackendModel = useCallback((backendClaim, currencies) => {
     if (backendClaim) {
@@ -69,13 +65,17 @@ const ClaimDetails = () => {
     [mapClaimFromBackendModel]
   );
 
+  /*
+  Allows the child component ClaimDetailsContent to reload the claim information from the backend
+  by modifying the state variable (reloadValue) which in turn invokes getSingleClaim.
+  */
   const reloadClaim = () => {
     setReloadValue(!reloadValue);
   };
 
   useEffect(() => {
-    getSingleClaim(buildPromise, onResolved);
-  }, [getSingleClaim, buildPromise, onResolved, reloadValue]);
+    getSingleClaim(buildAggregatePromise, onResolved);
+  }, [getSingleClaim, buildAggregatePromise, onResolved, reloadValue]);
 
   if (error) {
     return <p>{error}</p>;
@@ -86,7 +86,7 @@ const ClaimDetails = () => {
   }
 
   if (!isLoading && !claim) {
-    return <p>The claim you selected cannot be found</p>;
+    return <p>The claim cannot be found</p>;
   }
 
   if (claim) {

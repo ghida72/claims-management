@@ -18,6 +18,7 @@ const httpClient = {
 
 const sendRequest = async function (path, method, payload, headers) {
   const url = `${BASE_URL}/${path}`;
+  //in case the payload has a value, convert it to a JSON string object.
   const response = await fetch(url, {
     method: method,
     body: payload ? JSON.stringify(payload) : null,

@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import classes from "./ClaimRow.module.css";
-import formatDate from "../../helpers/formatDate";
+import getDisplayDate from "../../helpers/getDisplayDate";
 import { IonIcon } from "@ionic/react";
 import { linkOutline } from "ionicons/icons";
 
@@ -11,10 +10,10 @@ const ClaimRow = ({ claim }) => {
       ? "-"
       : `${claim.currency.symbol}${claim.approvedAmount.toFixed(2)}`;
 
-  const dateSubmitted = formatDate(claim.dateSubmitted);
+  const dateSubmitted = getDisplayDate(claim.dateSubmitted);
 
   return (
-    <tr className={"table " + classes["claim-row"]}>
+    <tr>
       <td>
         <Link to={`/claims/${claim.claimNumber}`}>
           {claim.claimNumber}

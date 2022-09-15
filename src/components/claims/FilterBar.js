@@ -1,14 +1,19 @@
 import React, { useState } from "react";
 import classes from "./FilterBar.module.css";
-import getToday from "../../helpers/getToday";
+import getISODate from "../../helpers/getISODate";
 
-const today = getToday();
+const today = getISODate();
 
 const FilterBar = ({ onFilter }) => {
+  /*The userCriteria maintains the internal state of the component until the user clicks the filter button 
+  which then shares it with the parent component and consequently results in filtering the claims.
+  This way the claims are only filtered once the user clicks the filter button rather than filtering on every 
+  input change*/
   const [userCriteria, setUserCriteria] = useState({});
   const handleInputChange = (e) =>
     setUserCriteria((prev) => {
       const result = { ...prev, [e.target.name]: e.target.value };
+      //clean up to avoid comparing with an empty value and resuling in no claims matching the criteria
       if (e.target.value === "") {
         delete result[e.target.name];
       }
@@ -76,7 +81,6 @@ const FilterBar = ({ onFilter }) => {
           onFilter(userCriteria);
         }}
       >
-        {" "}
         Filter
       </button>
     </form>

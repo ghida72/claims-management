@@ -1,7 +1,7 @@
 import { Fragment, useState, useEffect } from "react";
 import classes from "./ClaimDetailsContent.module.css";
-import formatDate from "../../helpers/formatDate";
-import getToday from "../../helpers/getToday";
+import getDisplayDate from "../../helpers/getDisplayDate";
+import getISODate from "../../helpers/getISODate";
 import { Link } from "react-router-dom";
 import httpClient from "../../services/httpClient";
 import { IonIcon } from "@ionic/react";
@@ -10,13 +10,7 @@ import AlertMessage from "../UI/AlertMessage";
 import prompt from "../../helpers/promptHelper";
 import { CLAIM_PROMPT_MESSAGE, ALERT_TYPES } from "../../constants";
 
-const ClaimDetailsContent = ({
-  claim,
-  CPTs,
-  ICDs,
-  onReloadClaim,
-  onToggle,
-}) => {
+const ClaimDetailsContent = ({ claim, CPTs, ICDs, onReloadClaim }) => {
   const [alert, setAlert] = useState(null);
   const ALERT_KEY = "alert";
 
@@ -29,9 +23,11 @@ const ClaimDetailsContent = ({
     }
   }, []);
 
-  const dateSubmitted = formatDate(claim.dateSubmitted);
-  const dateProcessed = claim.dateClosed ? formatDate(claim.dateClosed) : "-";
-  const dateOfBirth = formatDate(claim.patient.dateOfBirth);
+  const dateSubmitted = getDisplayDate(claim.dateSubmitted);
+  const dateProcessed = claim.dateClosed
+    ? getDisplayDate(claim.dateClosed)
+    : "-";
+  const dateOfBirth = getDisplayDate(claim.patient.dateOfBirth);
 
   const claimedTotal = claim.items
     .map((item) => item.requested.net)
@@ -43,18 +39,10 @@ const ClaimDetailsContent = ({
       : claim.items
           .map((item) => item.approved.net)
           .reduce((prev, current) => prev + current);
+
   const getCPT = (item) => CPTs.find((CPT) => CPT.code === item.CPT);
   const getDiagnosisICD = () =>
     ICDs.find((ICD) => ICD.code === claim.diagnosis.ICD);
-
-  const revertDate = (date) => {
-    const newDate = date.toLocaleDateString("en-CA", {
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
-    });
-    return newDate;
-  };
 
   const mapClaimToBackendModel = () => {
     const updatedClaim = {
@@ -63,10 +51,10 @@ const ClaimDetailsContent = ({
       patient: {
         firstName: claim.patient.firstName,
         lastName: claim.patient.lastName,
-        dateOfBirth: revertDate(claim.patient.dateOfBirth),
+        dateOfBirth: getISODate(claim.patient.dateOfBirth),
         sexAtBirth: claim.patient.sexAtBirth,
       },
-      dateSubmitted: revertDate(claim.dateSubmitted),
+      dateSubmitted: getISODate(claim.dateSubmitted),
       status: claim.status,
       diagnosis: claim.diagnosis,
       items: claim.items.map((item) => {
@@ -90,18 +78,18 @@ const ClaimDetailsContent = ({
 
   const putClaim = (updatedClaim, callback) => {
     httpClient
-      .put(`newClaims/${claim.claimNumber}.json`, updatedClaim)
+      .put(`claims/${claim.claimNumber}.json`, updatedClaim)
       .then(() => {
         callback();
       });
   };
 
   const storeAlert = (type, msg) => {
-    //Set a session variable that will be read upon reloading the content of the page
-    //the reason we need to do this is because the reload calls a method on the parent
-    //which sets a state variable and reloads the parent. This causes this component to be removed
-    //from the DOM and re-rendered. The session value will then be read in the useEffect() hook to
-    //display the alert accordingly.
+    /*Set a session variable that will be read upon reloading the content of the page.
+      the reason we need to do this is because the reload calls a method on the parent
+      which sets a state variable and reloads the parent. This causes this component to be removed
+      from the DOM and re-rendered. The session value will then be read in the useEffect() hook to
+      display the alert accordingly.*/
     const alertString = JSON.stringify({ type, msg });
     window.sessionStorage.setItem(ALERT_KEY, alertString);
     onReloadClaim();
@@ -121,8 +109,6 @@ const ClaimDetailsContent = ({
       if (isValid) {
         const updatedClaim = mapClaimToBackendModel();
 
-        const today = getToday();
-
         const isApproved = claim.items.every(
           (item) => item.requested.net === item.approved.net
         );
@@ -133,7 +119,8 @@ const ClaimDetailsContent = ({
           : isRejected
           ? "rejected"
           : "partially approved";
-        updatedClaim.dateClosed = today;
+        updatedClaim.dateClosed = getISODate();
+
         prompt(CLAIM_PROMPT_MESSAGE, () => {
           putClaim(updatedClaim, () => {
             storeAlert(ALERT_TYPES.success, "Claim processed successfully");
@@ -184,7 +171,7 @@ const ClaimDetailsContent = ({
             className={
               claim.status === "pending"
                 ? classes["action-buttons"]
-                : classes["action-buttons"] + " " + classes.hidden
+                : `${classes["action-buttons"]} ${classes.hidden}`
             }
           >
             <button className="btn btn--large" onClick={saveClaimHandler}>

@@ -8,6 +8,9 @@ const ClaimsTable = ({ filteredClaims }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  //Sorting was implemented on the frontend to showcase the logic of sorting through a hook
+  //that can be reused elsewhere. In real life projects with thousands or millions of claims,
+  //sorting of the claims would be done on the server.
   const { sortedItems, requestSort, sortConfig } =
     useSortableData(filteredClaims);
 
@@ -20,6 +23,7 @@ const ClaimsTable = ({ filteredClaims }) => {
     return "asc";
   };
 
+  //The keys are the property names in submittedCriteria, and the values are the th values
   const headersMap = {
     claimNumber: "Claim Number",
     patientName: "Patient Name",
@@ -42,6 +46,7 @@ const ClaimsTable = ({ filteredClaims }) => {
     return sortConfig.key === name ? sortConfig.direction : undefined;
   };
 
+  //prepares the table headers by using the headersMap object to populate an array of th elements
   const getHeadersMapContent = (headersMap) => {
     let content = [];
     for (let key in headersMap) {
@@ -51,7 +56,7 @@ const ClaimsTable = ({ filteredClaims }) => {
             onClick={() =>
               navigate(`/claims?sort=${key}&dir=${toggleSortDirection()}`)
             }
-            className={"btn btn--small " + classes[getClassNameFor(key)]}
+            className={`btn btn--small ${classes[getClassNameFor(key)]}`}
           >
             {headersMap[key]}
           </button>
@@ -62,7 +67,7 @@ const ClaimsTable = ({ filteredClaims }) => {
   };
 
   return (
-    <table className={"table " + classes["claims-table"]}>
+    <table className={`table ${classes["claims-table"]}`}>
       <thead>
         <tr>{getHeadersMapContent(headersMap)}</tr>
       </thead>
