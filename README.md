@@ -1,70 +1,34 @@
-# Getting Started with Create React App
+# Tour of the website
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+When the website first opens, claims are retrieved from the backend and displayed in the claims list.
 
-## Available Scripts
+![claims-list](https://user-images.githubusercontent.com/39875052/190860509-f178e852-9292-4eb5-874f-b1a4c7fdd097.PNG)
 
-In the project directory, you can run:
+The user can then filter the claims by entering one or a combination of filter criteria and then clicking the Filter button.
 
-### `npm start`
+![filtered-claims](https://user-images.githubusercontent.com/39875052/190860549-46f4b8fc-235c-4cda-a50b-fc5c6949405a.png)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+The user can then click on a claim number to navigate to the details of the claim.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+![claim-details](https://user-images.githubusercontent.com/39875052/190860586-94c74368-0f7e-4fd1-bb1b-78a19cb4404a.png)
 
-### `npm test`
+To process the claim, the user clicks on a line item code to open the item details drawer. Here, the user can enter the approved quantity which automatically calculates and fills the other fields in the approved column. Entering an invalid value (ex: greater than requested quantity) results in displaying an error message and disabling the Save button.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+![invalid-item-detail](https://user-images.githubusercontent.com/39875052/190860739-1bc656da-6215-493c-9909-91b32fe10be2.png)
 
-### `npm run build`
+Once the user enters a valid approved quantity, they're allowed to save their changes.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+![valid-item-detail](https://user-images.githubusercontent.com/39875052/190860783-d5ab9f97-60a0-4176-8d50-fbcf5fe90189.png)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+While processing a claim, the user can navigate between the different line items by clicking on the previous and next button at the top-left side of the drawer. In case the user enters a value and then attempts to close the drawer or navigate to another line item, they are prompted to save their changes first.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+![prompt](https://user-images.githubusercontent.com/39875052/190860850-5dc39773-5e6d-4271-83c9-9d0f56661987.png)
 
-### `npm run eject`
+While the claim is pending, the user can do any modifications and save their changes at any time (no validation). However, if a user attempts to Submit the claim without processing all of the line items, an error alert message is displayed.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+![submit-validation](https://user-images.githubusercontent.com/39875052/190861017-e127173c-ace1-49ea-a68c-64ea9ecc64a0.png)
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Once all line items are processed, the user can submit the claim which will prompt the user to confirm their decision. Once the user confirms, the Total Approved is calculated, the Date Processed is set to today, and the claim Status is computed. Finally, a success alert message is displayed the user and no more actions can be done to the claim (Save and Submit buttons are hidden).
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+![confirmed](https://user-images.githubusercontent.com/39875052/190861264-2fb3f915-2c81-4a48-b94e-f9f78b4143e7.png)
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
