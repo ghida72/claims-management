@@ -8,27 +8,36 @@ import { CPT_PROMPT_MESSAGE } from "../../constants";
 
 const Drawer = (props) => {
   const [isOpen, setIsOpen] = useState(false);
+  /*
+  setShowPrompt is passed to the child component through the context provider to determine 
+  when the drawer can be closed with or without displaying a prompt (ex: when a form is dirty).
+  */
   const [showPrompt, setShowPrompt] = useState(false);
 
   useEffect(() => {
+    //Set isOpen to true once the component is mounted which will trigger the transition effect (slide-in)
     setIsOpen(true);
   }, []);
+
+  const hideDrawerHandler = () => {
+    setIsOpen(false);
+    setShowPrompt(false);
+    if (props.postCloseHandler) {
+      /*
+      wait until the transition effect completes, and then invoke whatever behavior is requested 
+      by the caller (ex: navigate to another route)
+      */
+      setTimeout(() => {
+        props.postCloseHandler();
+      }, 500);
+    }
+  };
 
   const tryCloseDrawer = () => {
     if (showPrompt) {
       prompt(CPT_PROMPT_MESSAGE, hideDrawerHandler);
     } else {
       hideDrawerHandler();
-    }
-  };
-
-  const hideDrawerHandler = () => {
-    setIsOpen(false);
-    setShowPrompt(false);
-    if (props.postCloseHandler) {
-      setTimeout(() => {
-        props.postCloseHandler();
-      }, 500);
     }
   };
 

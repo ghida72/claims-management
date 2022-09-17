@@ -90,14 +90,14 @@ const ItemDetails = () => {
 
   const navigateToCpt = (i, e) => {
     e.preventDefault();
-    const _navigate = () => {
+    const executeNavigate = () => {
       setShowPrompt(false);
       navigate(`/claims/${claim.claimNumber}/${i.CPT}`);
     };
     if (showPrompt) {
-      prompt(CPT_PROMPT_MESSAGE, _navigate);
+      prompt(CPT_PROMPT_MESSAGE, executeNavigate);
     } else {
-      _navigate();
+      executeNavigate();
     }
   };
 
@@ -227,14 +227,10 @@ const ItemDetails = () => {
             type={alert.type}
             message={alert.msg}
             onCloseAlert={() => {
-              // console.log(e);
-              // debugger;
-              // e.preventDefault();
               setAlert(null);
             }}
           />
         )}
-        {/* <AlertMessage type={alert.type} message={alert.msg} /> */}
         <div className={classes["action-buttons"]}>
           {claim.status === "pending" && (
             <button

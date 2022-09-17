@@ -1,8 +1,5 @@
 .spinner {
-  /* display: block; */
   margin: 3.2rem auto;
-  /* width: 8 rem;
-  height: 8 rem; */
 }
 .spinner:after {
   content: " ";
