@@ -49,23 +49,9 @@
   gap: 3.2rem;
 }
 
-.alert {
-  margin-top: 1rem;
-  position: absolute;
-  top: 6.1rem;
-  right: 4rem;
-  width: 30%;
-  font-size: 1.4rem;
-  height: 5rem;
-}
-
-.alert div {
-  height: 100%;
-}
-
 .CPTTable {
   grid-column: 1/-1;
-  /* border-collapse: collapse; i substitued with border spacing so border radius can work */
+  /*Unlike border-collapse:collapse, border-spacing:0 does not affect the display of border radius */
   border-spacing: 0;
 }
 

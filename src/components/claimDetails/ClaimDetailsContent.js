@@ -1,28 +1,17 @@
-import { Fragment, useState, useEffect } from "react";
+import { Fragment } from "react";
 import classes from "./ClaimDetailsContent.module.css";
 import getDisplayDate from "../../helpers/getDisplayDate";
-import getISODate from "../../helpers/getISODate";
 import { Link } from "react-router-dom";
-import httpClient from "../../services/httpClient";
 import { IonIcon } from "@ionic/react";
 import { linkOutline } from "ionicons/icons";
-import AlertMessage from "../UI/AlertMessage";
-import prompt from "../../helpers/promptHelper";
-import { CLAIM_PROMPT_MESSAGE, ALERT_TYPES } from "../../constants";
 
-const ClaimDetailsContent = ({ claim, CPTs, ICDs, onReloadClaim }) => {
-  const [alert, setAlert] = useState(null);
-  const ALERT_KEY = "alert";
-
-  useEffect(() => {
-    const stringAlert = window.sessionStorage.getItem(ALERT_KEY);
-    if (stringAlert) {
-      const alertValue = JSON.parse(stringAlert);
-      setAlert(alertValue);
-      window.sessionStorage.removeItem(ALERT_KEY);
-    }
-  }, []);
-
+const ClaimDetailsContent = ({
+  claim,
+  CPTs,
+  ICDs,
+  onSaveClaim,
+  onConfirmClaim,
+}) => {
   const dateSubmitted = getDisplayDate(claim.dateSubmitted);
   const dateProcessed = claim.dateClosed
     ? getDisplayDate(claim.dateClosed)
@@ -44,100 +33,9 @@ const ClaimDetailsContent = ({ claim, CPTs, ICDs, onReloadClaim }) => {
   const getDiagnosisICD = () =>
     ICDs.find((ICD) => ICD.code === claim.diagnosis.ICD);
 
-  const mapClaimToBackendModel = () => {
-    const updatedClaim = {
-      claimNumber: claim.claimNumber,
-      currency: claim.currency.code,
-      patient: {
-        firstName: claim.patient.firstName,
-        lastName: claim.patient.lastName,
-        dateOfBirth: getISODate(claim.patient.dateOfBirth),
-        sexAtBirth: claim.patient.sexAtBirth,
-      },
-      dateSubmitted: getISODate(claim.dateSubmitted),
-      status: claim.status,
-      diagnosis: claim.diagnosis,
-      items: claim.items.map((item) => {
-        return {
-          CPT: item.CPT,
-          requested: {
-            quantity: item.requested.quantity,
-            unitPrice: item.requested.unitPrice,
-          },
-          approved: item.approved
-            ? {
-                quantity: item.approved.quantity,
-                unitPrice: item.approved.unitPrice,
-              }
-            : null,
-        };
-      }),
-    };
-    return updatedClaim;
-  };
-
-  const putClaim = (updatedClaim, callback) => {
-    httpClient
-      .put(`claims/${claim.claimNumber}.json`, updatedClaim)
-      .then(() => {
-        callback();
-      });
-  };
-
-  const storeAlert = (type, msg) => {
-    /*Set a session variable that will be read upon reloading the content of the page.
-      the reason we need to do this is because the reload calls a method on the parent
-      which sets a state variable and reloads the parent. This causes this component to be removed
-      from the DOM and re-rendered. The session value will then be read in the useEffect() hook to
-      display the alert accordingly.*/
-    const alertString = JSON.stringify({ type, msg });
-    window.sessionStorage.setItem(ALERT_KEY, alertString);
-    onReloadClaim();
-  };
-  const saveClaimHandler = () => {
-    if (claim.status === "pending") {
-      const updatedClaim = mapClaimToBackendModel();
-      putClaim(updatedClaim, () => {
-        storeAlert(ALERT_TYPES.success, "Claim saved successfully");
-      });
-    }
-  };
-
-  const confirmClaimHandler = () => {
-    if (claim.status === "pending") {
-      const isValid = claim.items.every((item) => item.approved);
-      if (isValid) {
-        const updatedClaim = mapClaimToBackendModel();
-
-        const isApproved = claim.items.every(
-          (item) => item.requested.net === item.approved.net
-        );
-        const isRejected = claim.items.every((item) => item.approved.net === 0);
-
-        updatedClaim.status = isApproved
-          ? "approved"
-          : isRejected
-          ? "rejected"
-          : "partially approved";
-        updatedClaim.dateClosed = getISODate();
-
-        prompt(CLAIM_PROMPT_MESSAGE, () => {
-          putClaim(updatedClaim, () => {
-            storeAlert(ALERT_TYPES.success, "Claim processed successfully");
-          });
-        });
-      } else {
-        storeAlert(
-          ALERT_TYPES.error,
-          "Please process all line items before submitting"
-        );
-      }
-    }
-  };
-
   return (
     <Fragment>
-      <div className={classes.claimInfo + " " + classes["grid-container"]}>
+      <div className={`${classes.claimInfo} ${classes["grid-container"]}`}>
         <div>
           <span className={classes.label}>Claim Number</span>
           <span>{claim.claimNumber}</span>
@@ -174,17 +72,17 @@ const ClaimDetailsContent = ({ claim, CPTs, ICDs, onReloadClaim }) => {
                 : `${classes["action-buttons"]} ${classes.hidden}`
             }
           >
-            <button className="btn btn--large" onClick={saveClaimHandler}>
+            <button className="btn btn--large" onClick={onSaveClaim}>
               Save
             </button>
-            <button className="btn btn--large" onClick={confirmClaimHandler}>
+            <button className="btn btn--large" onClick={onConfirmClaim}>
               Submit
             </button>
           </div>
         </div>
       </div>
 
-      <div className={classes.personInfo + " " + classes["grid-container"]}>
+      <div className={`${classes.personInfo} ${classes["grid-container"]}`}>
         <div>
           <span className={classes.label}>First Name</span>
           <span>{claim.patient.firstName}</span>
@@ -202,7 +100,7 @@ const ClaimDetailsContent = ({ claim, CPTs, ICDs, onReloadClaim }) => {
           <span>{dateOfBirth}</span>
         </div>
       </div>
-      <div className={classes.ICDInfo + " " + classes["grid-container"]}>
+      <div className={`${classes.ICDInfo} ${classes["grid-container"]}`}>
         <div>
           <span className={classes.label}>ICD</span>
           <span>{`${claim.diagnosis.ICD}-${
@@ -215,9 +113,8 @@ const ClaimDetailsContent = ({ claim, CPTs, ICDs, onReloadClaim }) => {
         </div>
       </div>
       <table
-        className={
-          "table " + classes.CPTTable + " " + classes["grid-container"]
-        }
+        className={`
+          table ${classes.CPTTable} ${classes["grid-container"]}`}
       >
         <thead>
           <tr>
@@ -251,15 +148,6 @@ const ClaimDetailsContent = ({ claim, CPTs, ICDs, onReloadClaim }) => {
           ))}
         </tbody>
       </table>
-      {alert && (
-        <div className={classes.alert}>
-          <AlertMessage
-            type={alert.type}
-            message={alert.msg}
-            onCloseAlert={() => setAlert(null)}
-          />
-        </div>
-      )}
     </Fragment>
   );
 };
