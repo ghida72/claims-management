@@ -118,9 +118,9 @@ const ClaimDetailsContent = ({
       >
         <thead>
           <tr>
-            <th>Type</th>
             <th>Code</th>
             <th>Description</th>
+            <th>Type</th>
             <th>Requested</th>
             <th>Approved</th>
           </tr>
@@ -130,12 +130,12 @@ const ClaimDetailsContent = ({
             <tr key={item.CPT}>
               <td>
                 <Link to={`/claims/${claim.claimNumber}/${item.CPT}`}>
-                  {CPTs && getCPT(item) ? getCPT(item).type : "N/A"}
+                  {item.CPT}
                   <IonIcon className={classes.icon} icon={linkOutline} />
                 </Link>
               </td>
-              <td>{item.CPT}</td>
               <td>{CPTs && getCPT(item) ? getCPT(item).description : "N/A"}</td>
+              <td>{CPTs && getCPT(item) ? getCPT(item).type : "N/A"}</td>
               <td>
                 {`${claim.currency.symbol}${item.requested.net.toFixed(2)}`}
               </td>
