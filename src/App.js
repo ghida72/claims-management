@@ -5,6 +5,7 @@ import ClaimDetails from "./pages/ClaimDetails";
 import ItemDetailsWrapper from "./components/claimDetails/ItemDetailsWrapper";
 import NotFound from "./pages/NotFound";
 import Layout from "./components/layout/Layout";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/claims/:claimNb" element={<ClaimDetails />}>
           <Route path=":itemCPT" element={<ItemDetailsWrapper />} />
         </Route>
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Layout>

@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import React, { Fragment, useEffect } from "react";
+import FilterBar from "./FilterBar";
 import classes from "./ClaimsTable.module.css";
 import ClaimRow from "./ClaimRow";
 import useSortableData from "../../hooks/useSortableData";
 import { useNavigate, useLocation } from "react-router-dom";
 
-const ClaimsTable = ({ filteredClaims }) => {
+const ClaimsTable = ({ filteredClaims, onFilter }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -67,16 +68,19 @@ const ClaimsTable = ({ filteredClaims }) => {
   };
 
   return (
-    <table className={`table ${classes["claims-table"]}`}>
-      <thead>
-        <tr>{getHeadersMapContent(headersMap)}</tr>
-      </thead>
-      <tbody>
-        {sortedItems.map((claim) => (
-          <ClaimRow key={claim.claimNumber} claim={claim} />
-        ))}
-      </tbody>
-    </table>
+    <Fragment>
+      <FilterBar onFilter={onFilter} />
+      <table className={`table ${classes["claims-table"]}`}>
+        <thead>
+          <tr>{getHeadersMapContent(headersMap)}</tr>
+        </thead>
+        <tbody>
+          {sortedItems.map((claim) => (
+            <ClaimRow key={claim.claimNumber} claim={claim} />
+          ))}
+        </tbody>
+      </table>
+    </Fragment>
   );
 };
 

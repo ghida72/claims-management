@@ -16,7 +16,7 @@ const MainNavigation = () => {
           </li>
           <li>
             <NavLink
-              to="*"
+              to="/dashboard"
               className={(navData) => (navData.isActive ? classes.active : "")}
             >
               Dashboard

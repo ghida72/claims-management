@@ -1,64 +1,37 @@
 import React, { useEffect, useState, useCallback } from "react";
-import httpClient from "../services/httpClient";
-import lookupStore from "../services/lookupStore";
-import useLoader from "../hooks/useLoader";
 import calculateNet from "../helpers/calculateNet";
-import FilterBar from "../components/claims/FilterBar";
 import ClaimsTable from "../components/claims/ClaimsTable";
-import LoadingSpinner from "../components/layout/LoadingSpinner";
+import ClaimsPageWrapper from "./ClaimsPageWrapper";
 
 const FilterableClaimsTable = () => {
-  const { isLoading, error, execute: getAllClaims } = useLoader();
   const [submittedCriteria, setSubmittedCriteria] = useState({});
   const [claims, setClaims] = useState([]);
 
-  const buildAggregatePromise = useCallback(() => {
-    /*The execute method of the useLoader hook expects a single promise, but we need to fetch 
-    data from two APIs.*/
-    return Promise.all([
-      httpClient.get(`claims.json`),
-      lookupStore.getCurrencies(),
-    ]);
-  }, []);
+  const transformClaimsData = (currentClaim, currencies) => {
+    const clm = {
+      claimNumber: currentClaim.claimNumber,
+      patientName: `${currentClaim.patient.firstName} ${currentClaim.patient.lastName}`,
+      dateSubmitted: new Date(currentClaim.dateSubmitted),
+      status: currentClaim.status,
+      currency: {
+        code: currentClaim.currency,
+        symbol: currencies.find(
+          (element) => element.code === currentClaim.currency
+        ).symbol,
+      },
+      claimedAmount: currentClaim.items
+        .map((item) => calculateNet(item.requested))
+        .reduce((prev, current) => prev + current),
 
-  const onPromisesResolved = useCallback((data) => {
-    const [claims, currencies] = data;
-    const loadedClaims = [];
-
-    for (const key in claims) {
-      //Map from claim backend model to view model
-      const currentClaim = claims[key];
-      const clm = {
-        claimNumber: currentClaim.claimNumber,
-        patientName: `${currentClaim.patient.firstName} ${currentClaim.patient.lastName}`,
-        dateSubmitted: new Date(currentClaim.dateSubmitted),
-        status: currentClaim.status,
-        currency: {
-          code: currentClaim.currency,
-          symbol: currencies.find(
-            (element) => element.code === currentClaim.currency
-          ).symbol,
-        },
-        claimedAmount: currentClaim.items
-          .map((item) => calculateNet(item.requested))
-          .reduce((prev, current) => prev + current),
-
-        approvedAmount:
-          currentClaim.status === "pending"
-            ? null
-            : currentClaim.items
-                .map((item) => calculateNet(item.approved))
-                .reduce((prev, current) => prev + current),
-      };
-
-      loadedClaims.push(clm);
-    }
-    setClaims(loadedClaims);
-  }, []);
-
-  useEffect(() => {
-    getAllClaims(buildAggregatePromise, onPromisesResolved);
-  }, [getAllClaims, buildAggregatePromise, onPromisesResolved]);
+      approvedAmount:
+        currentClaim.status === "pending"
+          ? null
+          : currentClaim.items
+              .map((item) => calculateNet(item.approved))
+              .reduce((prev, current) => prev + current),
+    };
+    return clm;
+  };
 
   const filteredClaims = claims.filter((claim) => {
     /*
@@ -103,21 +76,17 @@ const FilterableClaimsTable = () => {
     setSubmittedCriteria(criteria);
   };
 
-  let claimsTableContent = <p>No claims found. </p>;
-  if (filteredClaims.length > 0) {
-    claimsTableContent = <ClaimsTable filteredClaims={filteredClaims} />;
-  }
-  if (error) {
-    claimsTableContent = <p>{error}</p>;
-  }
-  if (isLoading) {
-    claimsTableContent = <LoadingSpinner />;
-  }
+  const showContent = filteredClaims.length > 0;
+
   return (
-    <main className="flex-layout">
-      <FilterBar onFilter={handleFilter} />
-      {claimsTableContent}
-    </main>
+    <ClaimsPageWrapper
+      claims={claims}
+      showContent={showContent}
+      transformClaimsData={transformClaimsData}
+      onTransform={(claims) => setClaims(claims)}
+    >
+      <ClaimsTable onFilter={handleFilter} filteredClaims={filteredClaims} />
+    </ClaimsPageWrapper>
   );
 };
 
