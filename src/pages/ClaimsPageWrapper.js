@@ -44,7 +44,8 @@ const ClaimsPageWrapper = (props) => {
   if (isLoading) {
     content = <LoadingSpinner />;
   }
-  return <main className="flex-layout">{content}</main>;
+  // return <main className="flex-layout">{content}</main>;
+  return <main className={props.className}>{content}</main>;
 };
 
 export default ClaimsPageWrapper;

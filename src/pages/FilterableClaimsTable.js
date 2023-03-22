@@ -80,6 +80,7 @@ const FilterableClaimsTable = () => {
 
   return (
     <ClaimsPageWrapper
+      className="flex-layout"
       claims={claims}
       showContent={showContent}
       transformClaimsData={transformClaimsData}

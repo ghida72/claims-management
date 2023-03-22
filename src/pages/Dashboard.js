@@ -7,6 +7,9 @@ const Dashboard = () => {
   const [claims, setClaims] = useState([]);
 
   const transformClaimsData = (currentClaim, currencies) => {
+    const claimCurrency = currencies.find(
+      (element) => element.code === currentClaim.currency
+    );
     const clm = {
       claimNumber: currentClaim.claimNumber,
       patientName: `${currentClaim.patient.firstName} ${currentClaim.patient.lastName}`,
@@ -14,23 +17,20 @@ const Dashboard = () => {
       status: currentClaim.status,
       currency: {
         code: currentClaim.currency,
-        symbol: currencies.find(
-          (element) => element.code === currentClaim.currency
-        ).symbol,
-        conversion: currencies.find(
-          (element) => element.code === currentClaim.currency
-        ).conversion,
+        symbol: claimCurrency.symbol,
+        conversion: claimCurrency.conversion,
       },
-      claimedAmount: currentClaim.items
-        .map((item) => calculateNet(item.requested))
-        .reduce((prev, current) => prev + current),
-
+      claimedAmount:
+        currentClaim.items
+          .map((item) => calculateNet(item.requested))
+          .reduce((prev, current) => prev + current) * claimCurrency.conversion,
       approvedAmount:
         currentClaim.status === "pending"
           ? null
           : currentClaim.items
               .map((item) => calculateNet(item.approved))
-              .reduce((prev, current) => prev + current),
+              .reduce((prev, current) => prev + current) *
+            claimCurrency.conversion,
     };
     return clm;
   };
@@ -39,6 +39,7 @@ const Dashboard = () => {
 
   return (
     <ClaimsPageWrapper
+      className="flex-layout"
       claims={claims}
       showContent={showContent}
       transformClaimsData={transformClaimsData}
