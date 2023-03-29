@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState } from "react";
 import calculateNet from "../helpers/calculateNet";
 import ClaimsTable from "../components/claims/ClaimsTable";
 import ClaimsPageWrapper from "./ClaimsPageWrapper";

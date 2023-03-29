@@ -8,7 +8,6 @@ import {
   Tooltip,
   Legend,
   CartesianGrid,
-  Label,
 } from "recharts";
 import amountsCalculator from "../../helpers/amountsCalculator";
 import classes from "./ClaimAmountsChart.module.css";

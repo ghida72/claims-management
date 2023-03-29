@@ -1,10 +1,16 @@
-import React, { Fragment, useEffect, useState, useCallback } from "react";
+import React, { Fragment, useEffect, useCallback } from "react";
 import httpClient from "../services/httpClient";
 import lookupStore from "../services/lookupStore";
 import useLoader from "../hooks/useLoader";
 import LoadingSpinner from "../components/layout/LoadingSpinner";
 
-const ClaimsPageWrapper = (props) => {
+const ClaimsPageWrapper = ({
+  showContent,
+  transformClaimsData,
+  onTransform,
+  className,
+  children,
+}) => {
   const { isLoading, error, execute: getAllClaims } = useLoader();
 
   const buildAggregatePromise = useCallback(() => {
@@ -23,11 +29,11 @@ const ClaimsPageWrapper = (props) => {
     for (const key in claims) {
       //Map from claim backend model to view model
       const currentClaim = claims[key];
-      const clm = props.transformClaimsData(currentClaim, currencies);
+      const clm = transformClaimsData(currentClaim, currencies);
 
       loadedClaims.push(clm);
     }
-    props.onTransform(loadedClaims);
+    onTransform(loadedClaims);
   }, []);
 
   useEffect(() => {
@@ -36,9 +42,9 @@ const ClaimsPageWrapper = (props) => {
 
   let content = <p>No claims found. </p>;
   let clName = "flex-layout";
-  if (props.showContent) {
-    content = <Fragment>{props.children}</Fragment>;
-    clName = props.className;
+  if (showContent) {
+    content = <Fragment>{children}</Fragment>;
+    clName = className;
   }
 
   if (error) {

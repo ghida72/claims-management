@@ -1,8 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
-import useLoader from "../../hooks/useLoader";
-import httpClient from "../../services/httpClient";
-import lookupStore from "../../services/lookupStore";
-import calculateNet from "../../helpers/calculateNet";
+import React from "react";
 import YearlyClaimsChart from "./YearlyClaimsChart";
 import ClosedClaimsPieChart from "./ClosedClaimsPieChart";
 import ClaimAmountsChart from "./ClaimAmountsChart";

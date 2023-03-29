@@ -8,7 +8,6 @@ import {
   Tooltip,
   Legend,
   CartesianGrid,
-  Label,
 } from "recharts";
 import classes from "./YearlyClaimsChart.module.css";
 
@@ -26,10 +25,6 @@ const YearlyClaimsChart = ({ claims }) => {
     }
   });
 
-  const CustomTooltip = ({ label, content }) => {
-    label = "number of claims";
-    return content;
-  };
   return (
     <ResponsiveContainer
       className={`dashboard-grid-cell ${classes.yearlyClaimsChart}`}
