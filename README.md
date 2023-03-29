@@ -32,3 +32,7 @@ Once all line items are processed, the user can submit the claim which will prom
 
 ![confirmed](https://user-images.githubusercontent.com/39875052/190861264-2fb3f915-2c81-4a48-b94e-f9f78b4143e7.png)
 
+The user can visualize important data in a dashboard containing charts constructed using the recharts library.
+
+![dashboard](https://user-images.githubusercontent.com/39875052/228626175-d76d183d-3068-4627-89dc-bb7f4efe6394.png)
+
