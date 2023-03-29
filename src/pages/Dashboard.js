@@ -39,7 +39,7 @@ const Dashboard = () => {
 
   return (
     <ClaimsPageWrapper
-      className="flex-layout"
+      className="grid-dashboard"
       claims={claims}
       showContent={showContent}
       transformClaimsData={transformClaimsData}

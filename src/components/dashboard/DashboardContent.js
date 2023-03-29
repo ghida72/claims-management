@@ -3,13 +3,15 @@ import useLoader from "../../hooks/useLoader";
 import httpClient from "../../services/httpClient";
 import lookupStore from "../../services/lookupStore";
 import calculateNet from "../../helpers/calculateNet";
-import ClaimsBarGraph from "../../components/dashboard/ClaimsBarGraph";
-import ClosedClaimsPieChart from "./ClosedlaimsPieChart";
-import ClaimsDualBarGraph from "./ClaimsDualBarGraph";
+import YearlyClaimsChart from "./YearlyClaimsChart";
+import ClosedClaimsPieChart from "./ClosedClaimsPieChart";
+import ClaimAmountsChart from "./ClaimAmountsChart";
 import DashboardCard from "./DashboardCard";
 import amountsCalculator from "../../helpers/amountsCalculator";
 
-/*In a real world case, the data relevant to constructing charts is better handled and processed by the back-end server, and then fetched to the UI. Since we're using a dummy back-end here, the claims data will be fetched and processed on the front-end in order to contruct the charts  */
+/*In a real world case, the data relevant to constructing charts is better handled and processed by the back-end server, 
+and then fetched to the UI. Since we're using a dummy back-end here, the claims data will be fetched 
+and processed on the front-end in order to contruct the charts  */
 
 const DashboardContent = ({ claims }) => {
   const closedClaims = claims.filter((claim) => claim.status !== "pending");
@@ -33,34 +35,34 @@ const DashboardContent = ({ claims }) => {
   const infoArray = [
     {
       title: "Pending Claims",
-      value: openClaimsCount,
-      unit: "",
+      value: parseInt(openClaimsCount),
       note: "as of today",
     },
     {
       title: "Total Paid",
-      value: totalPaid,
+      value: totalPaid.toFixed(2),
       unit: "$",
       note: "across all years",
+      style: "paid",
     },
     {
       title: "Total Savings",
-      value: totalRejected,
+      value: totalRejected.toFixed(2),
       unit: "$",
       note: "across all years",
+      style: "saved",
     },
   ];
 
   return (
     <>
       {infoArray.map((info) => (
-        <DashboardCard {...info} />
+        <DashboardCard key={info.title} {...info} />
       ))}
       <ClosedClaimsPieChart closedClaims={closedClaims} />
 
-      <ClaimsBarGraph claims={claims} />
-
-      <ClaimsDualBarGraph closedClaims={closedClaims} />
+      <ClaimAmountsChart closedClaims={closedClaims} />
+      <YearlyClaimsChart claims={claims} />
     </>
   );
 };

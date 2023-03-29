@@ -1,15 +1,18 @@
 import React from "react";
+import classes from "./DashboardCard.module.css";
 
-const DashboardCard = ({ title, value, unit, note }) => {
+const DashboardCard = ({ title, value, unit, note, style }) => {
+  const clName = style ? ` ${classes.value} ${classes[style]}` : classes.value;
+
   return (
-    <div>
-      <p>{title}</p>
-      <p>
+    <div className={`dashboard-grid-cell ${classes.dashboardCard}`}>
+      <p className={classes.title}>{title}</p>
+      <p className={clName}>
+        {unit && <span> {`${unit} `}</span>}
         {value}
-        <span> {unit}</span>
       </p>
 
-      <p>{note}</p>
+      <p className={classes.note}>{note}</p>
     </div>
   );
 };

@@ -35,17 +35,20 @@ const ClaimsPageWrapper = (props) => {
   }, [getAllClaims, buildAggregatePromise, onPromisesResolved]);
 
   let content = <p>No claims found. </p>;
+  let clName = "flex-layout";
   if (props.showContent) {
     content = <Fragment>{props.children}</Fragment>;
+    clName = props.className;
   }
+
   if (error) {
     content = <p>{error}</p>;
   }
   if (isLoading) {
     content = <LoadingSpinner />;
   }
-  // return <main className="flex-layout">{content}</main>;
-  return <main className={props.className}>{content}</main>;
+
+  return <main className={clName}>{content}</main>;
 };
 
 export default ClaimsPageWrapper;

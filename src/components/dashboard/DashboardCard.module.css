@@ -1,0 +1,36 @@
+.dashboardCard {
+  width: 100%;
+  height: 100%;
+  padding: 1rem 2rem;
+  line-height: 1.2;
+}
+
+.title {
+  font-size: 1.4rem;
+  font-weight: 500;
+  margin-bottom: 1.4rem;
+}
+
+.value {
+  font-size: 3rem;
+  text-align: center;
+  font-weight: 700;
+}
+
+.value span {
+  font-size: 1.8rem;
+  vertical-align: text-top;
+}
+
+.note {
+  font-size: 1rem;
+  text-align: center;
+}
+
+.paid {
+  color: #e49d22;
+}
+
+.saved {
+  color: green;
+}
